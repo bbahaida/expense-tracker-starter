@@ -25,15 +25,16 @@ No test framework is configured.
 
 Flat component structure under `src/` (no folders, no barrel files). State is managed via `useState` hooks — no context or external state library.
 
-- `App.jsx` — owns the `transactions` array (the single source of truth) and `addTransaction`. Renders the three children and nothing else.
+- `App.jsx` — owns the `transactions` array (the single source of truth), `addTransaction` and `deleteTransaction`. Renders the three children and nothing else.
 - `Summary.jsx` — takes `transactions`, computes income/expenses/balance itself, renders the summary cards.
 - `TransactionForm.jsx` — owns its own form state (description, amount, type, category), builds the new transaction (including `id` and `date`) and hands it up via the `onAdd` callback. Resets its fields after submit.
-- `TransactionList.jsx` — owns its own filter state (`filterType`, `filterCategory`), does the filtering and renders the table.
+- `TransactionList.jsx` — owns its own filter state (`filterType`, `filterCategory`) and the `pendingDelete` transaction awaiting confirmation. Does the filtering, renders the table, and calls the `onDelete` prop once the user confirms.
+- `ConfirmDialog.jsx` — presentational modal (`message`, `onConfirm`, `onCancel`). No state of its own; the caller decides when it is mounted.
 - `categories.js` — shared `categories` array, imported by the form and the list.
 
 Convention: state lives in the component that uses it; only `transactions` is lifted to `App`. Children receive data down as props and communicate up through callbacks. All styling stays in the global `App.css` (plain class names, no CSS modules).
 
 Key known issues:
 - Business logic (totals, filtering) still lives inline in the components rather than in separate helpers
-- No delete or edit for transactions
+- No edit for transactions (delete exists, add exists)
 - Filter state resets are not coordinated with the transaction list contents
