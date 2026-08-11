@@ -23,9 +23,17 @@ No test framework is configured.
 
 ## Architecture
 
-Single-component monolith in `src/App.jsx` — all state, logic, and rendering live in one component. State is managed via `useState` hooks (no context/external state library).
+Flat component structure under `src/` (no folders, no barrel files). State is managed via `useState` hooks — no context or external state library.
+
+- `App.jsx` — owns the `transactions` array (the single source of truth) and `addTransaction`. Renders the three children and nothing else.
+- `Summary.jsx` — takes `transactions`, computes income/expenses/balance itself, renders the summary cards.
+- `TransactionForm.jsx` — owns its own form state (description, amount, type, category), builds the new transaction (including `id` and `date`) and hands it up via the `onAdd` callback. Resets its fields after submit.
+- `TransactionList.jsx` — owns its own filter state (`filterType`, `filterCategory`), does the filtering and renders the table.
+- `categories.js` — shared `categories` array, imported by the form and the list.
+
+Convention: state lives in the component that uses it; only `transactions` is lifted to `App`. Children receive data down as props and communicate up through callbacks. All styling stays in the global `App.css` (plain class names, no CSS modules).
 
 Key known issues:
-- Transaction amounts stored as strings instead of numbers (causes calculation bugs)
-- No component decomposition
-- Business logic mixed with rendering
+- Business logic (totals, filtering) still lives inline in the components rather than in separate helpers
+- No delete or edit for transactions
+- Filter state resets are not coordinated with the transaction list contents
